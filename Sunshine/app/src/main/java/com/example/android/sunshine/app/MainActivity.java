@@ -1,6 +1,11 @@
 package com.example.android.sunshine.app;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -66,10 +71,44 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getWindow().getContext(), SettingsActivity.class);
+            startActivity(settingsIntent);
             return true;
+        } else if (id == R.id.action_map) {
+            SharedPreferences preferences = PreferenceManager
+                                                    .getDefaultSharedPreferences(this);
+            showMap(zipToLoc(preferences.getString(getString(R.string.pref_location_key), "")));
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public Uri zipToLoc(String zip) {
+        final Geocoder geocoder = new Geocoder(this);
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(zip, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                // Use the address as needed
+
+                try {
+                    return Uri.parse("geo:" + address.getLatitude() + "," + address.getLongitude());
+                } catch (Exception e) {
+                    Log.e("zipToLoc", e.toString());
+                }
+            }
+        } catch (IOException e) {
+            // handle exception
+        }
+        return null;
+    }
+
+    public void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     @Override
