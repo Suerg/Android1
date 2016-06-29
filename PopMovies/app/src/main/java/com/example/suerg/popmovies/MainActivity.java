@@ -1,13 +1,12 @@
 package com.example.suerg.popmovies;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 
-public class MainActivity extends FragmentActivity
-        implements MovieListFragment.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity
+        implements MovieGridFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

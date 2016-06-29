@@ -9,8 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,21 +18,20 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MovieListFragment.OnFragmentInteractionListener} interface
+ * {@link MovieGridFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MovieListFragment#newInstance} factory method to
+ * Use the {@link MovieGridFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MovieListFragment extends Fragment {
+public class MovieGridFragment extends Fragment {
 
-    ArrayAdapter<String> mMovieListAdapter;
+    MovieGridAdapter mMovieGridAdapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -46,7 +44,7 @@ public class MovieListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public MovieListFragment() {
+    public MovieGridFragment() {
         // Required empty public constructor
     }
 
@@ -56,11 +54,11 @@ public class MovieListFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MovieListFragment.
+     * @return A new instance of fragment MovieGridFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MovieListFragment newInstance(String param1, String param2) {
-        MovieListFragment fragment = new MovieListFragment();
+    public static MovieGridFragment newInstance(String param1, String param2) {
+        MovieGridFragment fragment = new MovieGridFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -81,18 +79,13 @@ public class MovieListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movie_grid, container, false);
 
-        String[] movieNames = {"Such", "Camelot", "Huckleberry Finn"};
-        List<String> weekForecast = new ArrayList<String>(
-                                                                 Arrays.asList(movieNames)
-        );
-        mMovieListAdapter = new ArrayAdapter<String>(getActivity(),
-                                                           R.layout.movie_list_item,
-                                                           weekForecast);
+        List<Movie> movies = new ArrayList<>();
+        mMovieGridAdapter = new MovieGridAdapter(getActivity(),movies);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.movie_list_view);
-        listView.setAdapter(mMovieListAdapter);
+        GridView gridView = (GridView) rootView.findViewById(R.id.movie_grid_view);
+        gridView.setAdapter(mMovieGridAdapter);
 
         new FetchPopMovies().execute();
 
@@ -138,7 +131,7 @@ public class MovieListFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public class FetchPopMovies extends AsyncTask<Void, Void, ArrayList<String>> {
+    public class FetchPopMovies extends AsyncTask<Void, Void, ArrayList<Movie>> {
 
         private final String LOG_TAG = FetchPopMovies.class.getSimpleName();
 
@@ -147,7 +140,7 @@ public class MovieListFragment extends Fragment {
             return "";
         }
 
-        protected ArrayList<String> doInBackground(Void... zips) {
+        protected ArrayList<Movie> doInBackground(Void... zips) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -155,7 +148,7 @@ public class MovieListFragment extends Fragment {
 
             // Will contain the raw JSON response as a string.
             String result = null;
-            ArrayList<String> movieNames;
+            ArrayList<Movie> movieNames;
 
             try {
 //            http://api.themoviedb.org/3/movie/popular?api_key=135f10fae785ba02b00aece950e9cad2
@@ -222,11 +215,11 @@ public class MovieListFragment extends Fragment {
             return movieNames;
         }
 
-        protected void onPostExecute(ArrayList<String> movieNames) {
-            mMovieListAdapter.clear();
+        protected void onPostExecute(ArrayList<Movie> movies) {
+            mMovieGridAdapter.clear();
 
-            for (String movieName : movieNames) {
-                mMovieListAdapter.add(movieName);
+            for (Movie movie : movies) {
+                mMovieGridAdapter.add(movie);
             }
         }
     }
