@@ -14,19 +14,13 @@ public class MovieListParser {
     String jsonMovieList;
     private final String LOG_TAG = MovieListParser.class.getSimpleName();
 
-    private final String TMDB_RESULTS = "results";
-    private final String TMDB_TITLE = "title";
-    private final String TMDB_POSTER_PATH = "poster_path";
-    private final String TMDB_BACKDROP_PATH = "backdrop_path";
-    private final String TMDB_ID = "id";
-
     public MovieListParser(String jsonMovieList) {
         this.jsonMovieList = jsonMovieList;
     }
 
     protected JSONArray getList() {
         try {
-            JSONArray list = new JSONObject(jsonMovieList).getJSONArray(TMDB_RESULTS);
+            JSONArray list = new JSONObject(jsonMovieList).getJSONArray(MovieConst.TMDB_RESULTS);
             return list;
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.toString());
@@ -41,8 +35,9 @@ public class MovieListParser {
 
         for (int i = 0; i < len; i++) {
             try {
-                String poster_path = list.getJSONObject(i).getString(TMDB_POSTER_PATH);
-                String backdrop_path = list.getJSONObject(i).getString(TMDB_BACKDROP_PATH);
+                JSONObject currentMovie = list.getJSONObject(i);
+                String poster_path = currentMovie.getString(MovieConst.TMDB_POSTER_PATH);
+                String backdrop_path = currentMovie.getString(MovieConst.TMDB_BACKDROP_PATH);
                 StringBuilder poster_builder = new StringBuilder(poster_path);
                 StringBuilder backdrop_builder = new StringBuilder(backdrop_path);
                 poster_builder.deleteCharAt(0);
@@ -50,11 +45,15 @@ public class MovieListParser {
 
                 poster_path = poster_builder.toString();
                 backdrop_path = backdrop_builder.toString();
+
                 Movie movie = new Movie(
-                    list.getJSONObject(i).getString(TMDB_TITLE),
-                    backdrop_path,
-                    poster_path,
-                    list.getJSONObject(i).getString(TMDB_ID)
+                                               currentMovie.getString(MovieConst.TMDB_TITLE),
+                                               backdrop_path,
+                                               poster_path,
+                                               currentMovie.getString(MovieConst.TMDB_ID),
+                                               currentMovie.getString(MovieConst.TMDB_OVERVIEW),
+                                               currentMovie.getDouble(MovieConst.TMDB_VOTE_AVG),
+                                               currentMovie.getString(MovieConst.TMDB_RELEASE_DATE)
                 );
                 movieList.add(movie);
             } catch (Exception ex) {

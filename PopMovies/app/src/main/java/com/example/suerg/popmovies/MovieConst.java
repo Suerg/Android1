@@ -2,12 +2,20 @@ package com.example.suerg.popmovies;
 
 import android.net.Uri;
 
-import java.net.URL;
-
 /**
  * Created by suerg on 6/29/2016.
  */
 public class MovieConst {
+    public final static String TMDB_RESULTS = "results";
+    public final static String TMDB_TITLE = "title";
+    public final static String TMDB_POSTER_PATH = "poster_path";
+    public final static String TMDB_BACKDROP_PATH = "backdrop_path";
+    public final static String TMDB_ID = "id";
+    public final static String TMDB_OVERVIEW = "overview";
+    public final static String TMDB_RUNTIME = "runtime";
+    public final static String TMDB_VOTE_AVG = "vote_average";
+    public final static String TMDB_RELEASE_DATE = "release_date";
+
     public Uri movieBaseUri;
     private static MovieConst ourInstance = new MovieConst();
 
@@ -16,14 +24,6 @@ public class MovieConst {
     }
 
     private MovieConst() {
-        Uri.Builder builder = new Uri.Builder();
-//        builder.scheme("http")
-//                .authority("api.themoviedb.org")
-//                .appendPath("3")
-//                .appendPath("movie")
-//                .appendPath("popular")
-//                .appendQueryParameter("api_key", getString(R.string.moviedb_api_key));
-
         Uri.Builder movieBase = new Uri.Builder();
         movieBase.scheme("http")
                 .authority("image.tmdb.org")
@@ -32,8 +32,5 @@ public class MovieConst {
                 .appendPath("w185");
 
         this.movieBaseUri = movieBase.build();
-        try {
-            URL url = new URL(builder.build().toString());
-        } catch (Exception ex) {}
     }
 }

@@ -1,6 +1,7 @@
 package com.example.suerg.popmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import java.io.BufferedReader;
@@ -84,8 +86,16 @@ public class MovieGridFragment extends Fragment {
         List<Movie> movies = new ArrayList<>();
         mMovieGridAdapter = new MovieGridAdapter(getActivity(),movies);
 
+        final Intent detailsIntent = new Intent(rootView.getContext(), MovieDetailActivity.class);
         GridView gridView = (GridView) rootView.findViewById(R.id.movie_grid_view);
         gridView.setAdapter(mMovieGridAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                detailsIntent.putExtra("DETAILS", mMovieGridAdapter.getItem(position));
+                startActivity(detailsIntent);
+            }
+        });
 
         new FetchPopMovies().execute();
 
@@ -193,12 +203,8 @@ public class MovieGridFragment extends Fragment {
                 Log.v(LOG_TAG, result);
                 MovieListParser mlp = new MovieListParser(result);
                 movieNames = mlp.getMovies();
-//                weatherForecast = new WeatherDataParser(forecastJsonStr).getWeather(metric);
-//                String first = weatherForecast[0];
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
                 return null;
             } finally{
                 if (urlConnection != null) {
